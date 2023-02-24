@@ -21,4 +21,6 @@ All of the entities in Boxgame are based off a singular Entity class that contai
 
 # Future Work
 
+The structure of the Entity system allows us to easily create additional types of entities, as long as we define the lifecycle methods that can handle them. By defining different types of entities, we can create entirely new games from this structure.
+
 Right now, there is not a good structure for code that occurs between multiple enties, like handling collisisons. In future projects, I would like to expand my codebase to include elements of a Entity Component System model to properly handle more abstract interactions between entities that aren't fully within a single element.
