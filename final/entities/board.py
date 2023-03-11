@@ -19,13 +19,39 @@ import pygame
 
 class Tetromino:
 
-    def __init__(self, base_tile, tiles, color):
+    def __init__(self, id, base_tile, tiles, color):
+        self.id = id
         self.base_tile = base_tile
         self.tiles = tiles
         self.color = color
 
     def get_absolute_tiles(self):
         return [(self.base_tile[0] + tile[0], self.base_tile[1] + tile[1]) for tile in self.tiles]
+
+    def can_move(self, x, y):
+        for tile in self.get_absolute_tiles():
+            if tile[0] + x < 0 or tile[0] + x >= BOARD_WIDTH:
+                return False
+            if tile[1] + y < 0 or tile[1] + y >= BOARD_HEIGHT:
+                return False
+
+            if BOARD[tile[1] + y][tile[0] + x] is not None and BOARD[tile[1] + y][tile[0] + x] != self.id:
+                return False
+
+        return True
+
+    def can_rotate(self, direction):
+        if direction == "cw":
+            tiles = [(tile[1], -tile[0]) for tile in self.tiles]
+        elif direction == "ccw":
+            tiles = [(-tile[1], tile[0]) for tile in self.tiles]
+
+        for tile in tiles:
+            if tile[0] + self.base_tile[0] < 0 or tile[0] + self.base_tile[0] >= BOARD_WIDTH:
+                return False
+            if tile[1] + self.base_tile[1] < 0 or tile[1] + self.base_tile[1] >= BOARD_HEIGHT:
+                return False
+        return True
 
     def move(self, x, y):
         self.base_tile = (self.base_tile[0] + x, self.base_tile[1] + y)
@@ -37,9 +63,14 @@ class Tetromino:
             self.tiles = [(-tile[1], tile[0]) for tile in self.tiles]
 
 
-BOARD_WIDTH = 20
-BOARD_HEIGHT = 40
-BOARD_HEIGHT_VISIBLE = 20
+# Represents the current state of the board. Each cell is either None (empty) or the index of
+# the tetromino in the TETROMINOS array.
+BOARD_WIDTH = 15
+BOARD_HEIGHT = 25
+
+BOARD = [[None for x in range(BOARD_WIDTH)]
+         for y in range(BOARD_HEIGHT)]
+
 
 # The width and height of each cell in the board
 CELL_WIDTH = 30
@@ -47,9 +78,10 @@ CELL_HEIGHT = 30
 
 BOARD_WIDTH_PX = CELL_WIDTH * BOARD_WIDTH
 BOARD_HEIGHT_PX = CELL_HEIGHT * BOARD_HEIGHT
-BOARD_X = 0
-BOARD_Y = 0
+BOARD_X = CELL_WIDTH
+BOARD_Y = CELL_HEIGHT
 BOARD_COLOR = (255, 255, 255)
+GRID_LINE_COLOR = (200, 200, 200)
 
 
 class Board(entity.Entity):
@@ -61,33 +93,48 @@ class Board(entity.Entity):
 
     rect = pygame.Rect(BOARD_X, BOARD_Y, BOARD_WIDTH_PX, BOARD_HEIGHT_PX)
 
-    # Represents the current state of the board. Each cell is either None (empty) or the index of
-    # the tetromino in the TETROMINOS array.
-    BOARD = [[None for x in range(BOARD_WIDTH)]
-             for y in range(BOARD_HEIGHT)]
-
     RECTS = [[pygame.Rect(BOARD_X + x * CELL_WIDTH, BOARD_Y + y * CELL_HEIGHT, CELL_WIDTH, CELL_HEIGHT)
               for x in range(BOARD_WIDTH)] for y in range(BOARD_HEIGHT)]
 
     def __init__(self, id, init_state):
         super().__init__(id, init_state)
 
-    def add_tetromino(self, tetromino):
+    def add_tetromino(self, base_tile, tiles, color):
+        tetromino = Tetromino(self.tetromino_count, base_tile, tiles, color)
         self.TETROMINOS.append(tetromino)
 
         base = tetromino.base_tile
         for tile in tetromino.tiles:
-            self.BOARD[base[1] + tile[1]][base[0] +
-                                          tile[0]] = self.tetromino_count
+            BOARD[base[1] + tile[1]][base[0] +
+                                     tile[0]] = self.tetromino_count
         self.tetromino_count += 1
 
     def move_tetromino(self, index, x, y):
         tetromino = self.TETROMINOS[index]
+
+        if not tetromino.can_move(x, y):
+            return
+
         for tile in tetromino.get_absolute_tiles():
-            self.BOARD[tile[1]][tile[0]] = None
+            BOARD[tile[1]][tile[0]] = None
         tetromino.move(x, y)
         for tile in tetromino.get_absolute_tiles():
-            self.BOARD[tile[1]][tile[0]] = index
+            BOARD[tile[1]][tile[0]] = index
+
+    def rotate_tetromino(self, index, direction):
+        tetromino = self.TETROMINOS[index]
+
+        if not tetromino.can_rotate(direction):
+            return
+
+        for tile in tetromino.get_absolute_tiles():
+            BOARD[tile[1]][tile[0]] = None
+        tetromino.rotate(direction)
+        for tile in tetromino.get_absolute_tiles():
+            BOARD[tile[1]][tile[0]] = index
+
+    def tetromino_is_active(self, index):
+        return self.TETROMINOS[index] is not None and self.TETROMINOS[index].can_move(0, 1)
 
     def update_state(self):
         pass
@@ -100,13 +147,19 @@ class Board(entity.Entity):
         # Draw the board
         pygame.draw.rect(surface, BOARD_COLOR, self.rect)
 
+        # Draw grid lines
+        for x in range(BOARD_WIDTH):
+            pygame.draw.line(surface, GRID_LINE_COLOR, (BOARD_X + x *
+                             CELL_WIDTH, BOARD_Y), (BOARD_X + x * CELL_WIDTH, BOARD_Y + BOARD_HEIGHT_PX))
+
+        for y in range(BOARD_HEIGHT):
+            pygame.draw.line(surface, GRID_LINE_COLOR, (BOARD_X,
+                             BOARD_Y + y * CELL_HEIGHT), (BOARD_X + BOARD_WIDTH_PX, BOARD_Y + y * CELL_HEIGHT))
+
         # Draw the tetrominos
-        for y in range(BOARD_HEIGHT_VISIBLE):
+        for y in range(BOARD_HEIGHT):
             for x in range(BOARD_WIDTH):
-                if self.BOARD[y][x] is not None:
-                    tetromino = self.TETROMINOS[self.BOARD[y][x]]
+                if BOARD[y][x] is not None:
+                    tetromino = self.TETROMINOS[BOARD[y][x]]
                     pygame.draw.rect(
                         surface, tetromino.color, self.RECTS[y][x])
-                else:
-                    pygame.draw.rect(
-                        surface, BOARD_COLOR, self.RECTS[y][x], 1)
