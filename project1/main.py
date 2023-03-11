@@ -5,7 +5,7 @@ import entity
 
 ENTITIES = []
 SCREEN_WIDTH, SCREEN_HEIGHT = 1280, 720
-SCREEN_COLOR = (255, 255, 255)
+SCREEN_COLOR = (255, 250, 250)
 
 RECT_COLOR = (86, 50, 148)
 
@@ -21,7 +21,7 @@ class Player(entity.Entity):
 
     def __init__(self, id, init_state):
 
-        init_state["laser_fire_rate"] = 250
+        init_state["laser_fire_rate"] = 50
         init_state["laser_cool_down"] = 0
         init_state["laser_count"] = 0
 
