@@ -34,7 +34,7 @@ class Entity(ABC):
         None
 
     @abstractmethod
-    def render(self):
+    def render(self, surface):
         None
 
     def remove(self):
@@ -71,8 +71,8 @@ def get_all_entities_by_type(type):
     return [entity for entity in ALL_ENTITIES if entity.type == type]
 
 
-def stepAll():
+def stepAll(surface):
     for entity in ALL_ENTITIES:
         entity.handle_event(pygame.event.get())
         entity.update_state()
-        entity.render()
+        entity.render(surface)
