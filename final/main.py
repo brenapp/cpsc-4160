@@ -23,8 +23,8 @@ piece_bag = bag.Bag()
 tiles, color = piece_bag.get_next()
 game_board.add_tetromino((1, 1), tiles, color)
 
+last_move = time.time()
 last_player_move = time.time()
-last_move_down = time.time()
 active_tetromino = 0
 while True:
 
@@ -33,32 +33,51 @@ while True:
             pygame.quit()
             sys.exit()
 
-    if pygame.key.get_pressed()[pygame.K_DOWN] and time.time() - last_player_move > 0.05:
+        if event.type == pygame.KEYDOWN:
+
+            # move the active tetromino left
+            if event.key == pygame.K_LEFT:
+                game_board.move_tetromino(active_tetromino, -1, 0)
+                last_player_move = time.time()
+
+            # move the active tetromino right
+            if event.key == pygame.K_RIGHT:
+                game_board.move_tetromino(active_tetromino, 1, 0)
+                last_player_move = time.time()
+
+            # rotate the active tetromino
+            if event.key == pygame.K_UP:
+                game_board.rotate_tetromino(active_tetromino, "ccw")
+                last_player_move = time.time()
+
+    # Hold to move
+    keys = pygame.key.get_pressed()
+
+    if keys[pygame.K_DOWN] and time.time() - last_player_move > 0.05:
         game_board.move_tetromino(active_tetromino, 0, 1)
         last_player_move = time.time()
-
-    if pygame.key.get_pressed()[pygame.K_LEFT] and time.time() - last_player_move > 0.10:
+    elif keys[pygame.K_LEFT] and time.time() - last_player_move > 0.1:
         game_board.move_tetromino(active_tetromino, -1, 0)
         last_player_move = time.time()
-
-    if pygame.key.get_pressed()[pygame.K_RIGHT] and time.time() - last_player_move > 0.10:
+    elif keys[pygame.K_RIGHT] and time.time() - last_player_move > 0.1:
         game_board.move_tetromino(active_tetromino, 1, 0)
         last_player_move = time.time()
+    elif keys[pygame.K_UP] and time.time() - last_player_move > 0.1:
+        game_board.rotate_tetromino(active_tetromino, "cw")
 
-    if pygame.key.get_pressed()[pygame.K_UP] and time.time() - last_player_move > 0.10:
-        game_board.rotate_tetromino(active_tetromino, "ccw")
-        last_player_move = time.time()
-
-    if time.time() - last_move_down > 0.5 and last_player_move > 0.05:
-        game_board.move_tetromino(active_tetromino, 0, 1)
-        last_move_down = time.time()
+    # move the active tetromino down
+    if time.time() - last_move > 0.15:
+        if game_board.tetromino_is_active(active_tetromino):
+            game_board.move_tetromino(active_tetromino, 0, 1)
+        last_move = time.time()
 
     # if the active tetromino can't move down, create a new one
-    if not game_board.tetromino_is_active(active_tetromino) and time.time() - last_move_down > 0.25:
+    if not game_board.tetromino_is_active(active_tetromino) and time.time() - last_player_move > 0.5:
+
         tiles, color = piece_bag.get_next()
-        game_board.add_tetromino((1, 1), tiles, color)
+        game_board.add_tetromino((board.BOARD_WIDTH // 2, 1), tiles, color)
         active_tetromino += 1
-        last_move_down = time.time()
+        last_move = time.time()
 
     surface.fill(SCREEN_COLOR)
     entity.stepAll(surface)
