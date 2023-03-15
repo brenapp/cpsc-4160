@@ -74,6 +74,9 @@ while True:
     # if the active tetromino can't move down, create a new one
     if not game_board.tetromino_is_active(active_tetromino) and time.time() - last_player_move > 0.5:
 
+        # Clear filled lines
+        game_board.clear_lines()
+
         tiles, image = piece_bag.get_next()
         game_board.add_tetromino((board.BOARD_WIDTH // 2, 1), tiles, image)
         active_tetromino += 1
@@ -85,8 +88,6 @@ while True:
             pygame.quit()
             sys.exit()
 
-        # Clear filled lines
-        game_board.clear_lines()
 
     surface.fill(SCREEN_COLOR)
     entity.stepAll(surface)
