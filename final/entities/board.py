@@ -19,11 +19,11 @@ import pygame
 
 class Tetromino:
 
-    def __init__(self, id, base_tile, tiles, color):
+    def __init__(self, id, base_tile, tiles, image):
         self.id = id
         self.base_tile = base_tile
         self.tiles = tiles
-        self.color = color
+        self.image = image
 
     def get_absolute_tiles(self):
         return [(self.base_tile[0] + tile[0], self.base_tile[1] + tile[1]) for tile in self.tiles]
@@ -99,8 +99,8 @@ class Board(entity.Entity):
     def __init__(self, id, init_state):
         super().__init__(id, init_state)
 
-    def add_tetromino(self, base_tile, tiles, color):
-        tetromino = Tetromino(self.tetromino_count, base_tile, tiles, color)
+    def add_tetromino(self, base_tile, tiles, image):
+        tetromino = Tetromino(self.tetromino_count, base_tile, tiles, image)
         self.TETROMINOS.append(tetromino)
 
         base = tetromino.base_tile
@@ -136,6 +136,16 @@ class Board(entity.Entity):
     def tetromino_is_active(self, index):
         return self.TETROMINOS[index] is not None and self.TETROMINOS[index].can_move(0, 1)
 
+    def clear_lines(self):
+        for y in range(BOARD_HEIGHT):
+            if all([BOARD[y][x] is not None for x in range(BOARD_WIDTH)]):
+                for x in range(BOARD_WIDTH):
+                    BOARD[y][x] = None
+
+                for y2 in range(y, 0, -1):
+                    for x in range(BOARD_WIDTH):
+                        BOARD[y2][x] = BOARD[y2 - 1][x]
+
     def update_state(self):
         pass
 
@@ -161,5 +171,5 @@ class Board(entity.Entity):
             for x in range(BOARD_WIDTH):
                 if BOARD[y][x] is not None:
                     tetromino = self.TETROMINOS[BOARD[y][x]]
-                    pygame.draw.rect(
-                        surface, tetromino.color, self.RECTS[y][x])
+                    pygame.Surface.blit(
+                        surface, tetromino.image, self.RECTS[y][x])
