@@ -10,8 +10,6 @@ Z_PIECE = [(0, 0), (-1, 0), (0, 1), (1, 1)]
 T_PIECE = [(0, 0), (-1, 1), (0, 1), (1, 1)]
 
 PIECES = [I_PIECE, J_PIECE, L_PIECE,  O_PIECE, S_PIECE, Z_PIECE, T_PIECE]
-COLORS = [(130, 255, 130), (0, 255, 0), (239, 132, 72),
-          (209, 171, 44), (165, 201, 64), (210, 92, 151), (255, 0, 0), (242, 110, 98)]
 
 # Load the blocks
 BLUE_BLOCK = pygame.image.load("assets/BlueBlock.png")
@@ -23,7 +21,7 @@ RED_BLOCK = pygame.image.load("assets/RedBlock.png")
 YELLOW_BLOCK = pygame.image.load("assets/YellowBlock.png")
 
 BLOCKS = [
-    BLUE_BLOCK, CYAN_BLOCK, GREEN_BLOCK, ORANGE_BLOCK, PURPLE_BLOCK, RED_BLOCK, YELLOW_BLOCK
+    CYAN_BLOCK, BLUE_BLOCK, ORANGE_BLOCK, YELLOW_BLOCK, GREEN_BLOCK, RED_BLOCK, PURPLE_BLOCK
 ]
 
 
