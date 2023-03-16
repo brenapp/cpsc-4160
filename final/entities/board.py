@@ -47,10 +47,16 @@ class Tetromino:
             tiles = [(-tile[1], tile[0]) for tile in self.tiles]
 
         for tile in tiles:
-            if tile[0] + self.base_tile[0] < 0 or tile[0] + self.base_tile[0] >= BOARD_WIDTH:
+            (x, y) = (tile[0] + self.base_tile[0], tile[1] + self.base_tile[1])
+
+            if x < 0 or x >= BOARD_WIDTH:
                 return False
-            if tile[1] + self.base_tile[1] < 0 or tile[1] + self.base_tile[1] >= BOARD_HEIGHT:
+            if y < 0 or y >= BOARD_HEIGHT:
                 return False
+
+            if BOARD[y][x] is not None and BOARD[y][x] != self.id:
+                return False
+
         return True
 
     def move(self, x, y):
