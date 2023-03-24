@@ -3,7 +3,6 @@ import sys
 import entities.entity as entity
 import entities.board as board
 import time
-import random
 import bag
 
 # Screen Dimensions (1920x1080 scaled to 75%)
@@ -18,7 +17,6 @@ surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
 game_board = board.Board("board", {})
 
-
 piece_bag = bag.Bag()
 tiles, image = piece_bag.get_next()
 game_board.add_tetromino((1, 1), tiles, image)
@@ -26,6 +24,7 @@ game_board.add_tetromino((1, 1), tiles, image)
 last_move = time.time()
 last_player_move = time.time()
 active_tetromino = 0
+held_tetromino = None
 while True:
 
     for event in pygame.event.get():
@@ -49,6 +48,22 @@ while True:
             if event.key == pygame.K_UP:
                 game_board.rotate_tetromino(active_tetromino, "ccw")
                 last_player_move = time.time()
+
+            # Swap Hold
+            if event.key == pygame.K_RSHIFT:
+
+                if held_tetromino is None:
+                    held_tetromino = game_board.TETROMINOS[active_tetromino].tiles
+                    game_board.remove_tetromino(active_tetromino)
+                    tiles, image = piece_bag.get_next()
+                    game_board.add_tetromino((1, 1), tiles, image)
+                    active_tetromino += 1
+                else:
+                    print("Swapping held piece with active piece", held_tetromino)
+                    game_board.remove_tetromino(active_tetromino)
+                    game_board.add_tetromino((1, 1), held_tetromino, None)
+                    active_tetromino += 1
+                    held_tetromino = None
 
     # Hold to move
     keys = pygame.key.get_pressed()
@@ -87,7 +102,6 @@ while True:
             print("Game Over")
             pygame.quit()
             sys.exit()
-
 
     surface.fill(SCREEN_COLOR)
     entity.stepAll(surface)

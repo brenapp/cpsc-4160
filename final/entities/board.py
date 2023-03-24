@@ -142,6 +142,12 @@ class Board(entity.Entity):
     def tetromino_is_active(self, index):
         return self.TETROMINOS[index] is not None and self.TETROMINOS[index].can_move(0, 1)
 
+    def remove_tetromino(self, index):
+        tiles = self.TETROMINOS[index].get_absolute_tiles()
+        for tile in tiles:
+            BOARD[tile[1]][tile[0]] = None
+        self.TETROMINOS[index] = None
+
     def clear_lines(self):
         for y in range(BOARD_HEIGHT):
             if all([BOARD[y][x] is not None for x in range(BOARD_WIDTH)]):
