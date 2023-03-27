@@ -71,6 +71,14 @@ class RenderTetrisBoard(system.System):
             pygame.Surface.blit(
                 self.surface, IMAGES[color], BOARD_PREVIEW_TILE_RECTS[tile[1]][tile[0]])
 
+        # Draw Held Piece (if it exists)
+        if self.board.held_piece is not None:
+            (tiles, color) = self.board.held_piece
+            for offset in tiles:
+                tile = (offset[0] + 1, offset[1] + 5)
+                pygame.Surface.blit(
+                    self.surface, IMAGES[color], BOARD_PREVIEW_TILE_RECTS[tile[1]][tile[0]])
+
         # Draw the tetrominos
         for y in range(BOARD_HEIGHT):
             for x in range(BOARD_WIDTH):
