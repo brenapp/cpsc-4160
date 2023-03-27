@@ -8,7 +8,8 @@
 # grid of cells, but all cells above 20 are invisible.
 #
 
-from entities.tetromino import Tetromino
+import random
+import entities.tetromino as tetromino
 from . import entity
 import pygame
 
@@ -23,10 +24,39 @@ class Board(entity.Entity):
     cells = [[None for x in range(BOARD_WIDTH)]
              for y in range(BOARD_HEIGHT)]
 
-    tetrominos: list[Tetromino] = []
+    tetrominos: list[tetromino.Tetromino] = []
     active_tetromino = None
 
-    def add_tetromino(self, tetromino: Tetromino):
+    pieces = [
+        (tetromino.I_PIECE, "CYAN"),
+        (tetromino.J_PIECE, "BLUE"),
+        (tetromino.L_PIECE, "ORANGE"),
+        (tetromino.O_PIECE, "YELLOW"),
+        (tetromino.S_PIECE, "GREEN"),
+        (tetromino.Z_PIECE, "RED"),
+        (tetromino.T_PIECE, "PURPLE")
+    ]
+    bag = []
+
+    def __init__(self):
+        self.add_piece()
+        super().__init__()
+
+    def add_piece(self):
+
+        if len(self.bag) < 1:
+            self.bag = list(range(len(self.pieces)))
+            random.shuffle(self.bag)
+
+        index = self.bag.pop()
+
+        new_piece = self.pieces[index]
+        self.add_tetromino(
+            tetromino.Tetromino(0, (BOARD_WIDTH // 2, 1),
+                                new_piece[0], new_piece[1])
+        )
+
+    def add_tetromino(self, tetromino: tetromino.Tetromino):
         self.active_tetromino = len(self.tetrominos)
         tetromino.index = self.active_tetromino
         self.tetrominos.append(tetromino)

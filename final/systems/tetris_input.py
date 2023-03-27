@@ -13,36 +13,9 @@ class TetrisInput(system.System):
     last_move = time.time()
     last_player_move = time.time()
 
-    pieces = [
-        (tetromino.I_PIECE, "CYAN"),
-        (tetromino.J_PIECE, "BLUE"),
-        (tetromino.L_PIECE, "ORANGE"),
-        (tetromino.O_PIECE, "YELLOW"),
-        (tetromino.S_PIECE, "GREEN"),
-        (tetromino.Z_PIECE, "RED"),
-        (tetromino.T_PIECE, "PURPLE")
-    ]
-
-    bag = []
-
     def __init__(self, board):
         self.board = board
-        self.add_piece()
         super().__init__()
-
-    def add_piece(self):
-
-        if len(self.bag) < 1:
-            self.bag = list(range(len(self.pieces)))
-            random.shuffle(self.bag)
-
-        index = self.bag.pop()
-
-        new_piece = self.pieces[index]
-        self.board.add_tetromino(
-            tetromino.Tetromino(0, (BOARD_WIDTH // 2, 1),
-                                new_piece[0], new_piece[1])
-        )
 
     def run(self, entities):
 
@@ -91,7 +64,7 @@ class TetrisInput(system.System):
         if not active.can_move(0, 1, self.board.cells) and time.time() - self.last_player_move > 0.15:
             self.board.clear_lines()
 
-            self.add_piece()
+            self.board.add_piece()
             if not self.board.tetrominos[self.board.active_tetromino].can_move(0, 1, self.board.cells):
                 print("Game Over!")
                 sys.exit()
