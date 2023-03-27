@@ -4,7 +4,6 @@ import systems.system as system
 import entities.tetromino as tetromino
 import pygame
 import time
-import random
 
 
 class TetrisInput(system.System):
@@ -37,6 +36,9 @@ class TetrisInput(system.System):
                 if event.key == pygame.K_UP:
                     self.board.rotate_active_tetromino("ccw")
                     self.last_player_move = time.time()
+
+                if event.key == pygame.K_RSHIFT:
+                    self.board.hold_active_tetromino()
 
         # React to held keys
         keys = pygame.key.get_pressed()
