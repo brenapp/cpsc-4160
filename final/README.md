@@ -8,7 +8,7 @@
 
 ## Updates
 
-### [Milestone 1](./final/milestones/Update1.md) (30 March 2023)
+### [Milestone 1](./milestones/Update1.md) (30 March 2023)
 - Implements basic game and code infrastructure
 - Basic Tetris gameplay
 - Basic Agent gameplay
