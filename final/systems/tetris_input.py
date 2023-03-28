@@ -44,8 +44,9 @@ class TetrisInput(system.System):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_DOWN] and time.time() - self.last_player_move > 0.05:
-            self.board.move_active_tetromino(0, 1)
-            self.last_player_move = time.time()
+            if self.board.tetrominos[self.board.active_tetromino].can_move(0, 1, self.board.cells):
+                self.board.move_active_tetromino(0, 1)
+                self.last_player_move = time.time()
         elif keys[pygame.K_LEFT] and time.time() - self.last_player_move > 0.15:
             self.board.move_active_tetromino(-1, 0)
             self.last_player_move = time.time()
