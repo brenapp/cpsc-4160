@@ -17,7 +17,6 @@ class System:
 
     def __init__(self):
         self.type = self.__class__.__name__
-        print(self.type)
         ALL_SYSTEMS.append(self)
 
     @abstractmethod

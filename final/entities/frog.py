@@ -52,12 +52,18 @@ class Frog(entity.Entity):
         self.acc[0].add(x)
         self.acc[1].add(y)
 
-    def step_kinematics(self):
-
+    def step_kinematics_x(self):
         self.vel[0].add(self.acc[0].value)
-        self.vel[1].add(self.acc[1].value)
         self.pos[0].add(self.vel[0].value)
-        self.pos[1].add(self.vel[1].value)
 
         self.acc[0].set(0)
+
+    def step_kinematics_y(self):
+        self.vel[1].add(self.acc[1].value)
+        self.pos[1].add(self.vel[1].value)
+
         self.acc[1].set(0)
+
+    def step_kinematics(self):
+        self.step_kinematics_x()
+        self.step_kinematics_y()
