@@ -8,6 +8,7 @@ IMAGES = {
     "FROG": pygame.image.load("assets/frog.png")
 }
 
+
 class RenderFrog(system.System):
 
     surface: pygame.Surface
@@ -20,6 +21,8 @@ class RenderFrog(system.System):
         self.frog = frog
         super().__init__()
 
-    def run(self, entities):
+    def run(self, entities, events):
+
         # Draw the frog
-        pygame.Surface.blit(self.surface, IMAGES["FROG"], (self.frog.position[0], self.frog.position[1]))
+        pygame.Surface.blit(
+            self.surface, IMAGES["FROG"], (self.frog.pos[0].value, self.frog.pos[1].value))

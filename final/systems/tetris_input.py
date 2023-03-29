@@ -2,6 +2,7 @@ import sys
 from entities.board import Board, BOARD_WIDTH, BOARD_HEIGHT
 import systems.system as system
 import entities.tetromino as tetromino
+import entities.entity as entity
 import pygame
 import time
 
@@ -16,10 +17,10 @@ class TetrisInput(system.System):
         self.board = board
         super().__init__()
 
-    def run(self, entities):
+    def run(self, entities: list[entity.Entity], events: list[pygame.event.Event]):
 
         # React to Keydown
-        for event in pygame.event.get():
+        for event in events:
             if event.type == pygame.KEYDOWN:
 
                 # move the active tetromino left

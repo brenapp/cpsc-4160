@@ -7,6 +7,8 @@
 #
 
 from abc import (ABC, abstractmethod)
+import pygame
+import entities.entity as entity
 
 ALL_SYSTEMS = []
 
@@ -19,10 +21,12 @@ class System:
         ALL_SYSTEMS.append(self)
 
     @abstractmethod
-    def run(self, entities):
+    def run(self, entities: list[entity.Entity], events: list[pygame.event.Event]):
         None
 
 
 def step_all(entities):
+
+    events = pygame.event.get()
     for system in ALL_SYSTEMS:
-        system.run(entities)
+        system.run(entities, events)

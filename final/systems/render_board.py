@@ -2,6 +2,7 @@ from entities.board import Board, BOARD_WIDTH, BOARD_HEIGHT
 import systems.system as system
 import entities.entity as entity
 import entities.tetromino as tetromino
+
 import pygame
 
 
@@ -50,7 +51,7 @@ class RenderTetrisBoard(system.System):
         self.board = board
         super().__init__()
 
-    def run(self, entities):
+    def run(self, entities, events):
         # Draw the board
         pygame.draw.rect(self.surface, BOARD_COLOR, BOARD_BG_RECT)
         pygame.draw.rect(self.surface, BOARD_COLOR, BOARD_PREVIEW_RECT)
