@@ -22,8 +22,8 @@ BOARD_HEIGHT = 25
 
 class Board(entity.Entity):
 
-    cells = [[None for x in range(BOARD_WIDTH)]
-             for y in range(BOARD_HEIGHT)]
+    cells: list[list[None | int]] = [[None for x in range(BOARD_WIDTH)]
+                                     for y in range(BOARD_HEIGHT)]
 
     tetrominos: list[entities.tetromino.Tetromino] = []
     active_tetromino = None
