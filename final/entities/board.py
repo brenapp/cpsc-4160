@@ -10,6 +10,7 @@
 
 import random
 import entities.tetromino
+import entities.frog
 from . import entity
 import pygame
 

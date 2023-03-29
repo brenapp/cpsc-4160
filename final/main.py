@@ -2,9 +2,12 @@ import pygame
 import entities.entity as entity
 import entities.board as board
 import entities.tetromino as tetromino
+import entities.frog as frog
 import systems.system as system
 import systems.render_board as render_board
 import systems.tetris_input as tetris_input
+import systems.frog_input as frog_input
+import systems.render_frog as render_frog
 
 import sys
 
@@ -21,6 +24,10 @@ surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 game_board = board.Board()
 render_board.RenderTetrisBoard(game_board, surface)
 tetris_input.TetrisInput(game_board)
+
+game_frog = frog.Frog(game_board, 50, 50)
+render_frog.RenderFrog(game_board, game_frog, surface)
+frog_input.FrogInput(game_board, game_frog)
 
 
 while True:
