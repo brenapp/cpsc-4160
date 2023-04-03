@@ -65,3 +65,4 @@ class Tetromino(entity.Entity):
             self.tiles = [(tile[1], -tile[0]) for tile in self.tiles]
         elif direction == "ccw":
             self.tiles = [(-tile[1], tile[0]) for tile in self.tiles]
+
