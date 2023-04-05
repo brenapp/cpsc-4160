@@ -107,18 +107,6 @@ class FrogInput(system.System):
 
     def run_y(self, entities: list[entity.Entity], events: list[pygame.event.Event]):
 
-        # Game defined state collisions
-        colliding = False
-        match self.state:
-            case FrogStateGrounded(collider):
-                pass
-            case FrogStateAirborne():
-                if self.frog_collider.colliderect(BOARD_BOTTOM_RECT):
-                    self.state = FrogStateGrounded(collider=BOARD_BOTTOM_RECT)
-                    self.frog.pos[1].set(BOARD_BOTTOM_RECT.y - 30)
-            case FrogStateClinging(collider):
-                pass
-
         # Player Defined Transitions
         for event in events:
             if event.type == pygame.KEYDOWN:
@@ -145,7 +133,7 @@ class FrogInput(system.System):
         self.frog_collider.y = self.frog.pos[1].value
 
         # Check for collisions with the board
-
+        colliding = False
         for y in range(0, BOARD_HEIGHT):
             for x in range(0, BOARD_WIDTH):
                 if self.board.cells[y][x] is None:
@@ -165,6 +153,19 @@ class FrogInput(system.System):
 
                     self.frog.vel[1].set(0)
                     self.frog.acc[1].set(0)
+
+        # Game defined state collisions
+        match self.state:
+            case FrogStateGrounded(collider):
+                if not self.frog_collider.colliderect(collider):
+                    print(self.frog_collider, collider)
+                pass
+            case FrogStateAirborne():
+                if self.frog_collider.colliderect(BOARD_BOTTOM_RECT):
+                    self.state = FrogStateGrounded(collider=BOARD_BOTTOM_RECT)
+                    self.frog.pos[1].set(BOARD_BOTTOM_RECT.y - 30)
+            case FrogStateClinging(collider):
+                pass
 
     def run(self, entities: list[entity.Entity], events: list[pygame.event.Event]):
         self.run_x(entities=entities, events=events)
