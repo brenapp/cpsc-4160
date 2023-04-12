@@ -1,4 +1,5 @@
 import sys
+
 from entities.board import Board, BOARD_WIDTH, BOARD_HEIGHT
 import systems.system as system
 import entities.frog as frog
@@ -20,12 +21,11 @@ class FrogStateAirborne:
     pass
 
 
-@dataclass
-class FrogStateClinging:
-    collider: pygame.Rect
+FrogState = FrogStateGrounded | FrogStateAirborne
 
 
-FrogState = FrogStateGrounded | FrogStateAirborne | FrogStateClinging
+def sign(x):
+    return (1 if x > 0 else -1)
 
 
 class FrogInput(system.System):
@@ -34,129 +34,131 @@ class FrogInput(system.System):
     last_move = time.time()
     last_player_move = time.time()
 
-    frog_collider: pygame.Rect
     state: FrogState = FrogStateGrounded(collider=BOARD_BOTTOM_RECT)
 
     def __init__(self, board: Board, frog: frog.Frog):
         self.board = board
         self.frog = frog
 
-        self.frog.pos[0].clamp(BOARD_X, BOARD_WIDTH_PX)
-        self.frog.pos[1].clamp(BOARD_Y, BOARD_HEIGHT_PX)
+        self.frog.vel[0].clamp(-10, 10)
+        self.frog.vel[1].clamp(-10, 10)
 
-        self.frog.vel[0].clamp(-5, 5)
-        self.frog.vel[1].clamp(-5, 5)
+        self.frog.collider.x = (BOARD_X + BOARD_WIDTH_PX / 2)
+        self.frog.collider.y = (BOARD_HEIGHT_PX - 3 * CELL_HEIGHT)
 
-        self.frog.acc[0].clamp(-5, 5)
-        self.frog.acc[1].clamp(-5, 5)
-
-        self.frog.pos[0].set(BOARD_X + BOARD_WIDTH_PX / 2)
-        self.frog.pos[1].set(BOARD_HEIGHT_PX)
-
-        self.frog.vel[0].set(0)
-        self.frog.vel[1].set(0)
-
-        self.frog.acc[0].set(0)
-        self.frog.acc[1].set(0)
-
-        self.frog_collider = pygame.Rect(
-            self.frog.pos[0].value, self.frog.pos[1].value, 30, 30)
+        self.frog.step_kinematics()
 
         super().__init__()
 
-    def run_x(self, entities: list[entity.Entity], events: list[pygame.event.Event]):
-
-        keys = pygame.key.get_pressed()
-
-        if keys[pygame.K_a]:
-            self.frog.apply_force(-5, 0)
-
-        if keys[pygame.K_d]:
-            self.frog.apply_force(5, 0)
-
-          # Colliding with the candidates
-        self.frog.pos[0].clamp(BOARD_X, BOARD_WIDTH_PX)
-        candidates = [BOARD_LEFT_WALL_RECT, BOARD_RIGHT_WALL_RECT]
+    def get_collision_candidates(self):
+        candidates = [BOARD_LEFT_WALL_RECT,
+                      BOARD_RIGHT_WALL_RECT, BOARD_BOTTOM_RECT]
         for y in range(0, BOARD_HEIGHT):
             for x in range(0, BOARD_WIDTH):
                 if self.board.cells[y][x] is None:
                     continue
 
-                if isinstance(self.state, FrogStateGrounded) and (y * CELL_HEIGHT) >= self.frog.pos[1].value:
-                    continue
-
                 candidates.append(BOARD_TILE_RECTS[y][x])
 
+        return candidates
+
+    def colliding_any(self, candidates):
         for candidate in candidates:
-            if self.frog_collider.colliderect(candidate):
+            if self.frog.collider.colliderect(candidate):
+                return candidate
+        return None
 
-                if self.frog.vel[0].value > 0:
-                    self.frog.pos[0].max_value = candidate.left
-                elif self.frog.vel[0].value < 0:
-                    self.frog.pos[0].min_value = candidate.right
+    def check_if_falling(self, candidates):
+        self.frog.collider.move_ip(0, 1)
+        candidate = self.colliding_any(candidates)
 
-                break
+        if candidate is not None:
+            self.state = FrogStateGrounded(collider=candidate)
 
-        # Apply Forces
-        self.frog.apply_force(-1 * self.frog.vel[0].value, 0)
+        self.frog.collider.move_ip(0, -1)
 
-        # Step Kinematics
-        self.frog.step_kinematics_x()
-        self.frog_collider.x = self.frog.pos[0].value
+    def check_collisions(self, offset, index, candidates):
+        self.frog.collider.move_ip(offset)
+        unaltered = True
 
-    def run_y(self, entities: list[entity.Entity], events: list[pygame.event.Event]):
+        while self.frog.collider.collidelist(candidates) != -1:
+            if index == 0:
+                self.frog.collider.x -= sign(offset[index])
+            else:
+                self.frog.collider.y -= sign(offset[index])
+            unaltered = False
+        return unaltered
 
-        # Transitions Between States
+    def player_input(self):
+
         keys = pygame.key.get_pressed()
-        match self.state:
+
+        self.frog.vel[0].set(0)
+
+        if keys[pygame.K_a]:
+            self.frog.vel[0].set(-5)
+        elif keys[pygame.K_d]:
+            self.frog.vel[0].set(5)
+        elif keys[pygame.K_w] and not isinstance(self.state, FrogStateAirborne):
+            self.frog.vel[1].set(-8.5)
+            self.state = FrogStateAirborne()
+
+    def run(self, entities: list[entity.Entity], events: list[pygame.event.Event]):
+
+        self.player_input()
+
+        # Check collisions
+        candidates = self.get_collision_candidates()
+
+        # Transitions
+
+        match(self.state):
+
             case FrogStateGrounded(collider):
 
-                if not self.frog_collider.colliderect(collider):
+                # Jumping handled in player_input()
+                self.frog.collider.move_ip(0, 1)
+
+                if self.colliding_any(candidates) is None:
                     self.state = FrogStateAirborne()
 
-                if keys[pygame.K_SPACE]:
-                    self.frog.apply_force(0, -20)
-                    self.state = FrogStateAirborne()
+                self.frog.collider.move_ip(0, -1)
 
             case FrogStateAirborne():
 
-                # Colliding with the candidates
-                candidates = [BOARD_BOTTOM_RECT]
-                for y in range(0, BOARD_HEIGHT):
-                    for x in range(0, BOARD_WIDTH):
-                        if self.board.cells[y][x] is None:
-                            continue
+                self.frog.collider.move_ip((0, self.frog.vel[1].value))
+                collision = self.colliding_any(candidates)
 
-                        candidates.append(BOARD_TILE_RECTS[y][x])
+                altered = False
 
-                for candidate in candidates:
-                    if self.frog_collider.colliderect(candidate):
-                        self.state = FrogStateGrounded(collider=candidate)
-                        break
+                while self.colliding_any(candidates) is not None:
+                    self.frog.collider.move_ip(
+                        0, -sign(self.frog.vel[1].value))
+                    altered = True
 
-                pass
-            case FrogStateClinging(collider):
-                pass
+                if altered:
+                    self.state = FrogStateGrounded(collider=collision)
 
-        # Apply Forces
+        if (self.frog.vel[0].value != 0):
+            self.frog.collider.move_ip((self.frog.vel[0].value, 0))
+
+            altered = False
+
+            while self.colliding_any(candidates) is not None:
+                self.frog.collider.move_ip(
+                    -sign(self.frog.vel[0].value), 0)
+                altered = True
+
+            if altered:
+                self.frog.vel[0].set(0)
 
         # Gravity
         if isinstance(self.state, FrogStateAirborne):
-            self.frog.apply_force(0, 0.1)
-            self.frog.vel[1].clamp(-5, 5)
-        elif isinstance(self.state, FrogStateClinging):
-            self.frog.apply_force(0, 0.1)
-            self.frog.vel[1].clamp(0, 0.3)
+            self.frog.vel[1].set(min(5, self.frog.vel[1].value + 0.5))
         else:
             self.frog.vel[1].set(0)
-            self.frog.acc[1].set(0)
 
-        # Step Kinematics
-        self.frog.step_kinematics_y()
-        self.frog_collider.y = self.frog.pos[1].value
+        # Step physics
+        self.frog.step_kinematics()
 
         print(self.state)
-
-    def run(self, entities: list[entity.Entity], events: list[pygame.event.Event]):
-        self.run_x(entities=entities, events=events)
-        self.run_y(entities=entities, events=events)

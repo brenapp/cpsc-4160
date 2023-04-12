@@ -25,4 +25,4 @@ class RenderFrog(system.System):
 
         # Draw the frog
         pygame.Surface.blit(
-            self.surface, IMAGES["FROG"], (self.frog.pos[0].value, self.frog.pos[1].value))
+            self.surface, IMAGES["FROG"], (self.frog.collider.x, self.frog.collider.y - 10))
