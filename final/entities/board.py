@@ -17,7 +17,7 @@ import pygame
 # Represents the current state of the board. Each cell is either None (empty) or the index of
 # the tetromino in the TETROMINOS array.
 BOARD_WIDTH = 15
-BOARD_HEIGHT = 25
+BOARD_HEIGHT = 17
 
 
 class Board(entity.Entity):

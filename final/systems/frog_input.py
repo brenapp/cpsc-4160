@@ -51,8 +51,10 @@ class FrogInput(system.System):
         # Horizontal Movement
         if keys[pygame.K_a] and time.time():
             self.frog.apply_force(-2, 0)
+            self.facing = "left"
         elif keys[pygame.K_d] and time.time():
             self.frog.apply_force(2, 0)
+            self.facing = "right"
 
         # Friction in the x direction
         self.frog.apply_force(-1 * self.frog.vel[0].value, 0)
