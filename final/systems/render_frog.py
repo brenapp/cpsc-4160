@@ -53,4 +53,4 @@ class RenderFrog(system.System):
                                 (self.frog.collider.x, self.frog.collider.y))
         elif (self.facing == "right"):
             pygame.Surface.blit(
-                self.surface, self.image, (self.frog.collider.x, self.frog.collider.y))
+                self.surface, self.image, (self.frog.collider.x, self.frog.collider.y - 10))
