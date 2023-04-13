@@ -93,8 +93,6 @@ class FrogInput(system.System):
 
         keys = pygame.key.get_pressed()
 
-        self.frog.vel[0].set(0)
-
         if keys[pygame.K_a]:
             self.frog.vel[0].set(-5)
         elif keys[pygame.K_d]:
