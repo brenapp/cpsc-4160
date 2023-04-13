@@ -57,4 +57,4 @@ class RenderFrog(system.System):
             pygame.Surface.blit(
                     self.surface, self.image, (self.frog.pos[0].value, self.frog.pos[1].value))
         
-        
+ 

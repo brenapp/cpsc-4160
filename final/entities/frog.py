@@ -1,3 +1,4 @@
+import pygame
 from . import entity
 
 
@@ -27,43 +28,17 @@ class ClampedValue:
 
 class Frog(entity.Entity):
 
-    pos: tuple[ClampedValue, 2]
     vel: tuple[ClampedValue, 2]
-    acc: tuple[ClampedValue, 2]
 
     def __init__(self, board, pos_x, pos_y):
-
-        self.pos = (
-            ClampedValue(pos_x, 0, 0),
-            ClampedValue(pos_y, 0, 0)
-        )
 
         self.vel = (
             ClampedValue(0, 0, 0),
             ClampedValue(0, 0, 0)
         )
 
-        self.acc = (
-            ClampedValue(0, 0, 0),
-            ClampedValue(0, 0, 0)
-        )
-
-    def apply_force(self, x, y):
-        self.acc[0].add(x)
-        self.acc[1].add(y)
-
-    def step_kinematics_x(self):
-        self.vel[0].add(self.acc[0].value)
-        self.pos[0].add(self.vel[0].value)
-
-        self.acc[0].set(0)
-
-    def step_kinematics_y(self):
-        self.vel[1].add(self.acc[1].value)
-        self.pos[1].add(self.vel[1].value)
-
-        self.acc[1].set(0)
+        self.collider = pygame.Rect(0, 0, 20, 20)
 
     def step_kinematics(self):
-        self.step_kinematics_x()
-        self.step_kinematics_y()
+        self.collider.x += self.vel[0].value
+        self.collider.y += self.vel[1].value
