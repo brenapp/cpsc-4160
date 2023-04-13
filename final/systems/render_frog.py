@@ -11,7 +11,7 @@ IMAGES = {
     "FROG_IDLE3": pygame.image.load("assets/frog_idle3.png"),
     "FROG_IDLE4": pygame.image.load("assets/frog_idle4.png"),
     "FROG_IDLE5": pygame.image.load("assets/frog_idle5.png"),
-    }
+}
 
 
 class RenderFrog(system.System):
@@ -19,8 +19,6 @@ class RenderFrog(system.System):
     surface: pygame.Surface
     board: Board
     frog: frog.Frog
-
-    
 
     def __init__(self, board, frog, surface):
         self.surface = surface
@@ -36,25 +34,23 @@ class RenderFrog(system.System):
         # Draw the frog
         frameNum = pygame.time.get_ticks()
         idletime = frameNum % 600
-        if(self.status == "idle"):
-            if(idletime >= 0 and idletime < 100):
+        if (self.status == "idle"):
+            if (idletime >= 0 and idletime < 100):
                 self.image = IMAGES["FROG"]
-            if(idletime >= 100 and idletime < 200):
+            if (idletime >= 100 and idletime < 200):
                 self.image = IMAGES["FROG_IDLE1"]
-            if(idletime >= 200 and idletime < 300):
+            if (idletime >= 200 and idletime < 300):
                 self.image = IMAGES["FROG_IDLE2"]
-            if(idletime >= 300 and idletime < 400):
+            if (idletime >= 300 and idletime < 400):
                 self.image = IMAGES["FROG_IDLE3"]
-            if(idletime >= 400 and idletime < 500):
+            if (idletime >= 400 and idletime < 500):
                 self.image = IMAGES["FROG_IDLE4"]
-            if(idletime >= 500 and idletime < 600):
+            if (idletime >= 500 and idletime < 600):
                 self.image = IMAGES["FROG_IDLE5"]
-        
-        if(self.facing == "left"):
-            pygame.Surface.blit(self.surface, pygame.transform.flip(self.image, True, False), 
-                                (self.frog.pos[0].value, self.frog.pos[1].value))
-        elif(self.facing == "right"):
+
+        if (self.facing == "left"):
+            pygame.Surface.blit(self.surface, pygame.transform.flip(self.image, True, False),
+                                (self.frog.collider.x, self.frog.collider.y))
+        elif (self.facing == "right"):
             pygame.Surface.blit(
-                    self.surface, self.image, (self.frog.pos[0].value, self.frog.pos[1].value))
-        
- 
+                self.surface, self.image, (self.frog.collider.x, self.frog.collider.y))

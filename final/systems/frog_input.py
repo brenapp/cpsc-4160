@@ -158,5 +158,3 @@ class FrogInput(system.System):
 
         # Step physics
         self.frog.step_kinematics()
-
-        print(self.state)
