@@ -96,6 +96,8 @@ class FrogInput(system.System):
 
         keys = pygame.key.get_pressed()
 
+        self.frog.vel[0].set(0)
+
         if keys[pygame.K_a]:
             if isinstance(self.state, FrogStateGrounded):
                 self.frog.vel[0].set(-3)
@@ -112,7 +114,7 @@ class FrogInput(system.System):
                 self.frog.vel[0].set(1)
                 self.frog.direction = "right"
 
-        elif keys[pygame.K_w] and not isinstance(self.state, FrogStateAirborne):
+        if keys[pygame.K_w] and not isinstance(self.state, FrogStateAirborne):
             self.frog.vel[1].set(-8.5)
             self.state = FrogStateAirborne()
             self.frog.status = "airborne"
@@ -173,10 +175,6 @@ class FrogInput(system.System):
             self.frog.vel[1].set(min(5, self.frog.vel[1].value + 0.5))
         else:
             self.frog.vel[1].set(0)
-
-        # Friction
-        if isinstance(self.state, FrogStateGrounded):
-            self.frog.vel[0].set(self.frog.vel[0].value * 0.9)
 
         # Step physics
         self.frog.step_kinematics()
