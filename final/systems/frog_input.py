@@ -96,11 +96,11 @@ class FrogInput(system.System):
         self.frog.vel[0].set(0)
 
         if keys[pygame.K_a]:
-            self.frog.vel[0].set(-5)
+            self.frog.vel[0].set(-1)
         elif keys[pygame.K_d]:
-            self.frog.vel[0].set(5)
-        elif keys[pygame.K_w] and not isinstance(self.state, FrogStateAirborne):
-            self.frog.vel[1].set(-8.5)
+            self.frog.vel[0].set(1)
+        if keys[pygame.K_w] and not isinstance(self.state, FrogStateAirborne):
+            self.frog.vel[1].set(-3)
             self.state = FrogStateAirborne()
 
     def run(self, entities: list[entity.Entity], events: list[pygame.event.Event]):
@@ -154,7 +154,7 @@ class FrogInput(system.System):
 
         # Gravity
         if isinstance(self.state, FrogStateAirborne):
-            self.frog.vel[1].set(min(5, self.frog.vel[1].value + 0.5))
+            self.frog.vel[1].set(min(1, self.frog.vel[1].value + 0.1))
         else:
             self.frog.vel[1].set(0)
 
