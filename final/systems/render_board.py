@@ -56,6 +56,7 @@ IMAGES = {
     "YELLOW": pygame.image.load("assets/YellowBlock.png"),
     "BACKGROUND": pygame.image.load("assets/gameBackground.png"),
     "BOARD": pygame.image.load("assets/boardBack.png"),
+    "PREVIEW": pygame.image.load("assets/previewBack.png")
 }
 
 
@@ -75,6 +76,7 @@ class RenderTetrisBoard(system.System):
 
         # Draw the board
         self.surface.blit(IMAGES["BOARD"], (BOARD_X-5, BOARD_Y-5))
+        self.surface.blit(IMAGES["PREVIEW"], (BOARD_X+475, BOARD_Y-5))
         #pygame.draw.rect(self.surface, BOARD_COLOR, BOARD_BG_RECT)
         #pygame.draw.rect(self.surface, BOARD_COLOR, BOARD_PREVIEW_RECT)
 
