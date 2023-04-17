@@ -115,7 +115,7 @@ class FrogInput(system.System):
                 self.frog.direction = "right"
 
         if keys[pygame.K_w] and not isinstance(self.state, FrogStateAirborne):
-            self.frog.vel[1].set(-8.5)
+            self.frog.vel[1].set(-3)
             self.state = FrogStateAirborne()
             self.frog.status = "airborne"
 
@@ -178,3 +178,15 @@ class FrogInput(system.System):
 
         # Step physics
         self.frog.step_kinematics()
+
+        if self.frog.collider.x < BOARD_X:
+            self.frog.collider.x = BOARD_X
+
+        if self.frog.collider.x > BOARD_X + BOARD_WIDTH_PX:
+            self.frog.collider.x = BOARD_X + BOARD_WIDTH_PX
+
+        if self.frog.collider.y < BOARD_Y:
+            self.frog.collider.y = BOARD_Y
+
+        if self.frog.collider.y > BOARD_Y + BOARD_HEIGHT_PX:
+            self.frog.collider.y = BOARD_Y + BOARD_HEIGHT_PX
