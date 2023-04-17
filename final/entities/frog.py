@@ -37,6 +37,9 @@ class Frog(entity.Entity):
             ClampedValue(0, 0, 0)
         )
 
+        self.direction = "right"
+        self.status = "idle"
+
         self.collider = pygame.Rect(0, 0, 20, 20)
 
     def step_kinematics(self):

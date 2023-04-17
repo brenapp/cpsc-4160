@@ -11,7 +11,7 @@ CELL_HEIGHT = 30
 
 BOARD_WIDTH_PX = CELL_WIDTH * BOARD_WIDTH
 BOARD_HEIGHT_PX = CELL_HEIGHT * BOARD_HEIGHT
-BOARD_X = CELL_WIDTH
+BOARD_X = CELL_WIDTH + 180
 BOARD_Y = CELL_HEIGHT
 BOARD_COLOR = (255, 255, 255)
 GRID_LINE_COLOR = (200, 200, 200)
@@ -54,6 +54,8 @@ IMAGES = {
     "PURPLE": pygame.image.load("assets/PurpleBlock.png"),
     "RED": pygame.image.load("assets/RedBlock.png"),
     "YELLOW": pygame.image.load("assets/YellowBlock.png"),
+    "BACKGROUND": pygame.image.load("assets/gameBackground.png"),
+    "BOARD": pygame.image.load("assets/boardBack.png"),
 }
 
 
@@ -68,9 +70,13 @@ class RenderTetrisBoard(system.System):
         super().__init__()
 
     def run(self, entities, events):
+        #Draw background
+        self.surface.blit(IMAGES["BACKGROUND"], (0,0))
+
         # Draw the board
-        pygame.draw.rect(self.surface, BOARD_COLOR, BOARD_BG_RECT)
-        pygame.draw.rect(self.surface, BOARD_COLOR, BOARD_PREVIEW_RECT)
+        self.surface.blit(IMAGES["BOARD"], (BOARD_X-5, BOARD_Y-5))
+        #pygame.draw.rect(self.surface, BOARD_COLOR, BOARD_BG_RECT)
+        #pygame.draw.rect(self.surface, BOARD_COLOR, BOARD_PREVIEW_RECT)
 
         # Draw grid lines
         for x in range(BOARD_WIDTH):

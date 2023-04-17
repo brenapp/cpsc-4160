@@ -39,6 +39,8 @@ class FrogInput(system.System):
     def __init__(self, board: Board, frog: frog.Frog):
         self.board = board
         self.frog = frog
+        self.frog.direction = "right"
+        self.frog.status = "idle"
 
         self.frog.vel[0].clamp(-10, 10)
         self.frog.vel[1].clamp(-10, 10)
@@ -74,6 +76,7 @@ class FrogInput(system.System):
 
         if candidate is not None:
             self.state = FrogStateGrounded(collider=candidate)
+            self.frog.status = "idle"
 
         self.frog.collider.move_ip(0, -1)
 
@@ -96,12 +99,25 @@ class FrogInput(system.System):
         self.frog.vel[0].set(0)
 
         if keys[pygame.K_a]:
-            self.frog.vel[0].set(-1)
+            if isinstance(self.state, FrogStateGrounded):
+                self.frog.vel[0].set(-3)
+                self.frog.direction = "left"
+            else:
+                self.frog.vel[0].set(-1)
+                self.frog.direction = "left"
+
         elif keys[pygame.K_d]:
-            self.frog.vel[0].set(1)
+            if isinstance(self.state, FrogStateGrounded):
+                self.frog.vel[0].set(3)
+                self.frog.direction = "right"
+            else:
+                self.frog.vel[0].set(1)
+                self.frog.direction = "right"
+
         if keys[pygame.K_w] and not isinstance(self.state, FrogStateAirborne):
-            self.frog.vel[1].set(-3)
+            self.frog.vel[1].set(-8.5)
             self.state = FrogStateAirborne()
+            self.frog.status = "airborne"
 
     def run(self, entities: list[entity.Entity], events: list[pygame.event.Event]):
 
@@ -121,6 +137,7 @@ class FrogInput(system.System):
 
                 if self.colliding_any(candidates) is None:
                     self.state = FrogStateAirborne()
+                    self.frog.status = "airborne"
 
                 self.frog.collider.move_ip(0, -1)
 
@@ -138,6 +155,7 @@ class FrogInput(system.System):
 
                 if altered:
                     self.state = FrogStateGrounded(collider=collision)
+                    self.frog.status = "idle"
 
         if (self.frog.vel[0].value != 0):
             self.frog.collider.move_ip((self.frog.vel[0].value, 0))
@@ -160,5 +178,3 @@ class FrogInput(system.System):
 
         # Step physics
         self.frog.step_kinematics()
-
-        print(self.state)
