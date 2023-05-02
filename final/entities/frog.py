@@ -41,6 +41,7 @@ class Frog(entity.Entity):
         self.status = "idle"
 
         self.collider = pygame.Rect(0, 0, 20, 20)
+        self.side_collider = pygame.Rect(0, 0, 22, 5)
 
     def step_kinematics(self):
         self.collider.x += self.vel[0].value
