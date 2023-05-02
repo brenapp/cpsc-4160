@@ -75,7 +75,14 @@ class RenderFrog(system.System):
 
         if (self.frog.direction == "left"):
             pygame.Surface.blit(self.surface, pygame.transform.flip(self.image, True, False),
-                                (self.frog.collider.x, self.frog.collider.y))
+                                (self.frog.collider.x, self.frog.collider.y - 10))
         elif (self.frog.direction == "right"):
             pygame.Surface.blit(
                 self.surface, self.image, (self.frog.collider.x, self.frog.collider.y - 10))
+            
+
+        # Draw hitboxes
+        red = (255, 0 , 0)
+        green = (0, 255, 0)
+        pygame.draw.rect(self.surface, red, self.frog.collider)
+        pygame.draw.rect(self.surface, green, self.frog.side_collider)
