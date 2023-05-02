@@ -23,6 +23,8 @@ class Tetromino(entity.Entity):
         self.tiles = tiles
         self.color = color
 
+        super().__init__()
+
     def get_absolute_tiles(self):
         return [(self.base_tile[0] + tile[0], self.base_tile[1] + tile[1]) for tile in self.tiles]
 
@@ -65,4 +67,3 @@ class Tetromino(entity.Entity):
             self.tiles = [(tile[1], -tile[0]) for tile in self.tiles]
         elif direction == "ccw":
             self.tiles = [(-tile[1], tile[0]) for tile in self.tiles]
-
