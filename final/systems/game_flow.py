@@ -22,21 +22,25 @@ class GameFlow(system.System):
     def run(self, entities, events):
 
         if self.game_status.winner != status.Winner.NONE:
-            pygame.draw.rect(self.surface, (255, 255, 255),
-                             pygame.Rect(0, CELL_HEIGHT * 4, 900, CELL_HEIGHT * 4))
+            if self.game_status.winner == status.Winner.FROG:
+                self.surface.blit(pygame.image.load("assets/frog_win.png"), (0, 0))
+            else:
+                self.surface.blit(pygame.image.load("assets/frog_win.png"), (0, 0))
+            # pygame.draw.rect(self.surface, (255, 255, 255),
+            #                  pygame.Rect(0, CELL_HEIGHT * 4, 900, CELL_HEIGHT * 4))
 
-            text_surface = self.font.render(
-                "GAME OVER", True, (0, 0, 0))
-            text_rect = text_surface.get_rect(
-                center=(900 // 2, CELL_HEIGHT * 5))
-            self.surface.blit(text_surface, text_rect)
+            # text_surface = self.font.render(
+            #     "GAME OVER", True, (0, 0, 0))
+            # text_rect = text_surface.get_rect(
+            #     center=(900 // 2, CELL_HEIGHT * 5))
+            # self.surface.blit(text_surface, text_rect)
 
-            winner = "FROG" if self.game_status.winner == status.Winner.FROG else "TETRIS"
-            text_surface = self.font.render(
-                "WINNER: " + winner, True, "Coral" if self.game_status.winner == status.Winner.FROG else "Blue")
-            text_rect = text_surface.get_rect(
-                center=(900 // 2, CELL_HEIGHT * 7))
-            self.surface.blit(text_surface, text_rect)
+            # winner = "FROG" if self.game_status.winner == status.Winner.FROG else "TETRIS"
+            # text_surface = self.font.render(
+            #     "WINNER: " + winner, True, "Coral" if self.game_status.winner == status.Winner.FROG else "Blue")
+            # text_rect = text_surface.get_rect(
+            #     center=(900 // 2, CELL_HEIGHT * 7))
+            # self.surface.blit(text_surface, text_rect)
 
             pygame.display.flip()
             self.game_status.game_over = True
