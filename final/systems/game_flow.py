@@ -25,7 +25,7 @@ class GameFlow(system.System):
             if self.game_status.winner == status.Winner.FROG:
                 self.surface.blit(pygame.image.load("assets/frog_win.png"), (0, 0))
             else:
-                self.surface.blit(pygame.image.load("assets/frog_win.png"), (0, 0))
+                self.surface.blit(pygame.image.load("assets/tetris_win.png"), (0, 0))
             # pygame.draw.rect(self.surface, (255, 255, 255),
             #                  pygame.Rect(0, CELL_HEIGHT * 4, 900, CELL_HEIGHT * 4))
 
