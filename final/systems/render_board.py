@@ -70,13 +70,13 @@ class RenderTetrisBoard(system.System):
         super().__init__()
 
     def run(self, entities, events):
-        #Draw background
-        self.surface.blit(IMAGES["BACKGROUND"], (0,0))
+        # Draw background
+        self.surface.blit(IMAGES["BACKGROUND"], (0, 0))
 
         # Draw the board
         self.surface.blit(IMAGES["BOARD"], (BOARD_X-5, BOARD_Y-5))
-        #pygame.draw.rect(self.surface, BOARD_COLOR, BOARD_BG_RECT)
-        #pygame.draw.rect(self.surface, BOARD_COLOR, BOARD_PREVIEW_RECT)
+        # pygame.draw.rect(self.surface, BOARD_COLOR, BOARD_BG_RECT)
+        # pygame.draw.rect(self.surface, BOARD_COLOR, BOARD_PREVIEW_RECT)
 
         # Draw grid lines
         for x in range(BOARD_WIDTH):
@@ -88,7 +88,7 @@ class RenderTetrisBoard(system.System):
                              BOARD_Y + y * CELL_HEIGHT), (BOARD_X + BOARD_WIDTH_PX, BOARD_Y + y * CELL_HEIGHT))
 
         # Draw Up Next Tetromino
-        (tiles, color) = self.board.pieces[self.board.bag[-1]]
+        (tiles, color) = self.board.pieces[self.board.bag[0]]
         for offset in tiles:
             tile = (offset[0] + 1, offset[1] + 1)
             pygame.Surface.blit(

@@ -52,7 +52,7 @@ class Board(entity.Entity):
             random.shuffle(new_order)
             self.bag.extend(new_order)
 
-        index = self.bag.pop()
+        index = self.bag.pop(0)
 
         new_piece = self.pieces[index]
         self.add_tetromino(
