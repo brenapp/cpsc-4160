@@ -3,7 +3,6 @@ import entities.entity as entity
 import entities.board as board
 import entities.tetromino as tetromino
 import entities.frog as frog
-import entities.powerup as powerup
 import entities.game_status as game_status
 import systems.system as system
 import systems.render_board as render_board
@@ -31,7 +30,6 @@ status = game_status.GameStatus()
 status.winner = game_status.Winner.NONE
 game_board = board.Board()
 game_frog = frog.Frog(game_board, 50, 50)
-game_powerup = powerup.PowerUp(0, 0)
 
 
 # Systems (run in this order)
