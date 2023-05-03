@@ -6,6 +6,7 @@ import entities.frog as frog
 import entities.game_status as game_status
 import systems.system as system
 import systems.render_board as render_board
+import systems.handle_shockwave as handle_shockwave
 import systems.tetris_input as tetris_input
 import systems.frog_input as frog_input
 import systems.game_flow as game_flow
@@ -35,9 +36,12 @@ game_frog = frog.Frog(game_board, 50, 50)
 # Systems (run in this order)
 tetris_input.TetrisInput(game_board, status)
 frog_input.FrogInput(game_board, game_frog, status)
+
 render_board.RenderTetrisBoard(game_board, surface)
 render_frog.RenderFrog(game_board, game_frog, surface)
 render_powerup.RenderPowerUp(game_board, surface)
+handle_shockwave.HandleShockwave(surface)
+
 game_flow.GameFlow(surface, status)
 
 

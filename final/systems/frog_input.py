@@ -4,6 +4,7 @@ from entities.board import Board, BOARD_WIDTH, BOARD_HEIGHT
 import systems.system as system
 import entities.frog as frog
 import entities.entity as entity
+import entities.shockwave as shockwave
 import entities.game_status as status
 from systems.render_board import BOARD_HEIGHT_PX, BOARD_WIDTH_PX, BOARD_X, BOARD_Y, BOARD_TILE_RECTS, BOARD_LEFT_WALL_RECT, BOARD_RIGHT_WALL_RECT, BOARD_BOTTOM_RECT, CELL_HEIGHT
 import pygame
@@ -128,6 +129,17 @@ class FrogInput(system.System):
             if isinstance(self.state, FrogStateGrounded):
                 self.frog.status = "idle"
 
+        if keys[pygame.K_e] and self.last_player_move + 0.5 < time.time():
+            boom = shockwave.Shockwave(
+                self.frog.collider.x, self.frog.collider.y)
+
+            if self.frog.direction == "left":
+                boom.vel[0].set(-3)
+            else:
+                boom.vel[0].set(3)
+
+            self.last_player_move = time.time()
+
         if keys[pygame.K_w] and not isinstance(self.state, FrogStateAirborne):
             self.frog.vel[1].set(-3)
             self.state = FrogStateAirborne()
@@ -139,7 +151,6 @@ class FrogInput(system.System):
 
         # Check collisions
         candidates = self.get_collision_candidates()
-        side_candidates = self.get_collision_candidates()
 
         # Transitions
 
