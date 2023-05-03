@@ -124,14 +124,14 @@ class FrogInput(system.System):
                 self.frog.vel[0].set(1)
                 self.frog.direction = "right"
 
+        else:
+            if isinstance(self.state, FrogStateGrounded):
+                self.frog.status = "idle"
+
         if keys[pygame.K_w] and not isinstance(self.state, FrogStateAirborne):
             self.frog.vel[1].set(-3)
             self.state = FrogStateAirborne()
             self.frog.status = "airborne"
-
-        else:
-            if isinstance(self.state, FrogStateGrounded):
-                self.frog.status = "idle"
             
 
     def run(self, entities: list[entity.Entity], events: list[pygame.event.Event]):
