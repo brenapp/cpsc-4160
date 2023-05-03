@@ -3,6 +3,7 @@ from entities.board import Board, BOARD_WIDTH, BOARD_HEIGHT
 import systems.system as system
 import entities.tetromino as tetromino
 import entities.entity as entity
+import entities.game_status as status
 import pygame
 import time
 
@@ -10,11 +11,13 @@ import time
 class TetrisInput(system.System):
 
     board: Board
+    game_status: status.GameStatus
     last_move = time.time()
     last_player_move = time.time()
 
-    def __init__(self, board):
+    def __init__(self, board, status: status.GameStatus):
         self.board = board
+        self.game_status = status
         super().__init__()
 
     def run(self, entities: list[entity.Entity], events: list[pygame.event.Event]):
@@ -70,5 +73,5 @@ class TetrisInput(system.System):
 
             self.board.add_piece()
             if not self.board.tetrominos[self.board.active_tetromino].can_move(0, 1, self.board.cells):
-                print("Game Over!")
-                sys.exit()
+                self.game_status.winner = status.Winner.FROG
+                print("Game Status: Frog Wins")

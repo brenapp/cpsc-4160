@@ -4,10 +4,10 @@ from entities.board import Board, BOARD_WIDTH, BOARD_HEIGHT
 import systems.system as system
 import entities.frog as frog
 import entities.entity as entity
+import entities.game_status as status
 from systems.render_board import BOARD_HEIGHT_PX, BOARD_WIDTH_PX, BOARD_X, BOARD_Y, BOARD_TILE_RECTS, BOARD_LEFT_WALL_RECT, BOARD_RIGHT_WALL_RECT, BOARD_BOTTOM_RECT, CELL_HEIGHT
 import pygame
 import time
-import itertools
 from dataclasses import dataclass
 
 
@@ -35,10 +35,12 @@ class FrogInput(system.System):
     last_player_move = time.time()
 
     state: FrogState = FrogStateGrounded(collider=BOARD_BOTTOM_RECT)
+    game_status: status.GameStatus
 
-    def __init__(self, board: Board, frog: frog.Frog):
+    def __init__(self, board: Board, frog: frog.Frog, status: status.GameStatus):
         self.board = board
         self.frog = frog
+        self.game_status = status
         self.frog.direction = "right"
         self.frog.status = "idle"
 
@@ -70,6 +72,12 @@ class FrogInput(system.System):
                 return candidate
         return None
 
+    def side_colliding_any(self, candidates):
+        for candidate in candidates:
+            if self.frog.side_collider.colliderect(candidate):
+                return candidate
+        return None
+
     def check_if_falling(self, candidates):
         self.frog.collider.move_ip(0, 1)
         candidate = self.colliding_any(candidates)
@@ -96,6 +104,8 @@ class FrogInput(system.System):
 
         keys = pygame.key.get_pressed()
 
+        self.frog.vel[0].set(0)
+
         if keys[pygame.K_a]:
             if isinstance(self.state, FrogStateGrounded):
                 self.frog.vel[0].set(-3)
@@ -114,8 +124,8 @@ class FrogInput(system.System):
                 self.frog.vel[0].set(1)
                 self.frog.direction = "right"
 
-        elif keys[pygame.K_w] and not isinstance(self.state, FrogStateAirborne):
-            self.frog.vel[1].set(-8.5)
+        if keys[pygame.K_w] and not isinstance(self.state, FrogStateAirborne):
+            self.frog.vel[1].set(-3)
             self.state = FrogStateAirborne()
             self.frog.status = "airborne"
 
@@ -130,6 +140,7 @@ class FrogInput(system.System):
 
         # Check collisions
         candidates = self.get_collision_candidates()
+        side_candidates = self.get_collision_candidates()
 
         # Transitions
 
@@ -145,6 +156,11 @@ class FrogInput(system.System):
                     self.frog.status = "airborne"
 
                 self.frog.collider.move_ip(0, -1)
+                if self.colliding_any(candidates) is not None:
+                    for collision in self.colliding_any(candidates):
+                        if collision not in self.side_colliding_any(candidates):
+                            self.game_status.winner = status.Winner.TETRIS
+                            print("Game Status: Tetris Wins")
 
             case FrogStateAirborne():
 
@@ -177,13 +193,31 @@ class FrogInput(system.System):
 
         # Gravity
         if isinstance(self.state, FrogStateAirborne):
-            self.frog.vel[1].set(min(5, self.frog.vel[1].value + 0.5))
+            self.frog.vel[1].set(min(1, self.frog.vel[1].value + 0.1))
         else:
             self.frog.vel[1].set(0)
 
-        # Friction
-        if isinstance(self.state, FrogStateGrounded):
-            self.frog.vel[0].set(self.frog.vel[0].value * 0.9)
-
         # Step physics
         self.frog.step_kinematics()
+
+        if self.frog.collider.x < BOARD_X:
+            self.frog.collider.x = BOARD_X
+
+        if self.frog.collider.x > BOARD_X + BOARD_WIDTH_PX:
+            self.frog.collider.x = BOARD_X + BOARD_WIDTH_PX
+
+        if self.frog.collider.y < BOARD_Y:
+            self.frog.collider.y = BOARD_Y
+
+        if self.frog.collider.y > BOARD_Y + BOARD_HEIGHT_PX:
+            self.frog.collider.y = BOARD_Y + BOARD_HEIGHT_PX
+
+        self.frog.side_collider.x = self.frog.collider.x - 3
+        self.frog.side_collider.y = self.frog.collider.y + 5
+
+        # Side Testing
+        candidate = self.side_colliding_any(candidates)
+
+        if candidate is not None:
+            # print("Side colliding")
+            pass
