@@ -100,6 +100,7 @@ class FrogInput(system.System):
             if isinstance(self.state, FrogStateGrounded):
                 self.frog.vel[0].set(-3)
                 self.frog.direction = "left"
+                self.frog.status = "walking"
             else:
                 self.frog.vel[0].set(-1)
                 self.frog.direction = "left"
@@ -108,6 +109,7 @@ class FrogInput(system.System):
             if isinstance(self.state, FrogStateGrounded):
                 self.frog.vel[0].set(3)
                 self.frog.direction = "right"
+                self.frog.status = "walking"
             else:
                 self.frog.vel[0].set(1)
                 self.frog.direction = "right"
@@ -116,6 +118,11 @@ class FrogInput(system.System):
             self.frog.vel[1].set(-8.5)
             self.state = FrogStateAirborne()
             self.frog.status = "airborne"
+
+        else:
+            if isinstance(self.state, FrogStateGrounded):
+                self.frog.status = "idle"
+            
 
     def run(self, entities: list[entity.Entity], events: list[pygame.event.Event]):
 
