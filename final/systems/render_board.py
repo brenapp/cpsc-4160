@@ -56,7 +56,8 @@ IMAGES = {
     "YELLOW": pygame.image.load("assets/YellowBlock.png"),
     "BACKGROUND": pygame.image.load("assets/gameBackground.png"),
     "BOARD": pygame.image.load("assets/boardBack.png"),
-    "PREVIEW": pygame.image.load("assets/previewBack.png")
+    "PREVIEW": pygame.image.load("assets/previewBack.png"),
+    "HOLD": pygame.image.load("assets/holdBack.png")
 }
 
 
@@ -77,6 +78,7 @@ class RenderTetrisBoard(system.System):
         # Draw the board
         self.surface.blit(IMAGES["BOARD"], (BOARD_X-5, BOARD_Y-5))
         self.surface.blit(IMAGES["PREVIEW"], (BOARD_X+475, BOARD_Y-5))
+        self.surface.blit(IMAGES["HOLD"], (BOARD_X+475, BOARD_Y+145))
         # pygame.draw.rect(self.surface, BOARD_COLOR, BOARD_BG_RECT)
         # pygame.draw.rect(self.surface, BOARD_COLOR, BOARD_PREVIEW_RECT)
 
@@ -92,7 +94,7 @@ class RenderTetrisBoard(system.System):
         # Draw Up Next Tetromino
         (tiles, color) = self.board.pieces[self.board.bag[0]]
         for offset in tiles:
-            tile = (offset[0] + 1, offset[1] + 1)
+            tile = (offset[0] + 1, offset[1] + 2)
             pygame.Surface.blit(
                 self.surface, IMAGES[color], BOARD_PREVIEW_TILE_RECTS[tile[1]][tile[0]])
 
@@ -100,7 +102,7 @@ class RenderTetrisBoard(system.System):
         if self.board.held_piece is not None:
             (tiles, color) = self.board.held_piece
             for offset in tiles:
-                tile = (offset[0] + 1, offset[1] + 5)
+                tile = (offset[0] + 1, offset[1] + 7)
                 pygame.Surface.blit(
                     self.surface, IMAGES[color], BOARD_PREVIEW_TILE_RECTS[tile[1]][tile[0]])
 

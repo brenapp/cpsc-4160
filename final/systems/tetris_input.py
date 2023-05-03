@@ -17,6 +17,7 @@ class TetrisInput(system.System):
 
     def __init__(self, board, status: status.GameStatus):
         self.board = board
+        self.hold = True
         self.game_status = status
         super().__init__()
 
@@ -41,8 +42,9 @@ class TetrisInput(system.System):
                     self.board.rotate_active_tetromino("ccw")
                     self.last_player_move = time.time()
 
-                if event.key == pygame.K_RSHIFT:
+                if event.key == pygame.K_RSHIFT and self.hold:
                     self.board.hold_active_tetromino()
+                    self.hold = False
 
         # React to held keys
         keys = pygame.key.get_pressed()
@@ -72,6 +74,7 @@ class TetrisInput(system.System):
             self.board.clear_lines()
 
             self.board.add_piece()
+            self.hold = True
             if not self.board.tetrominos[self.board.active_tetromino].can_move(0, 1, self.board.cells):
                 self.game_status.winner = status.Winner.FROG
                 print("Game Status: Frog Wins")
