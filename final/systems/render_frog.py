@@ -17,6 +17,9 @@ IMAGES = {
     "FROG_JUMP4": pygame.image.load("assets/frog_jump4.png"),
     "FROG_JUMP5": pygame.image.load("assets/frog_jump5.png"),
     "FROG_JUMP6": pygame.image.load("assets/frog_jump6.png"),
+    "FROG_WALK1": pygame.image.load("assets/frog_walk1.png"),
+    "FROG_WALK2": pygame.image.load("assets/frog_walk2.png"),
+    "FROG_WALK3": pygame.image.load("assets/frog_walk3.png"),
 }
 
 DRAW_HITBOXES = False
@@ -33,6 +36,7 @@ class RenderFrog(system.System):
         self.board = board
         self.frog = frog
         self.airtime = 0
+        self.walktime = 0
         self.image = IMAGES["FROG"]
         super().__init__()
 
@@ -41,7 +45,10 @@ class RenderFrog(system.System):
         # Draw the frog
         frameNum = pygame.time.get_ticks()
         idletime = frameNum % 600
-        if (self.frog.status != "airborne"):
+        
+        if(self.frog.status != "walking"):
+            self.walktime = 0
+        if(self.frog.status != "airborne"):
             self.airtime = 0
         if (self.frog.status == "idle"):
             if (idletime >= 0 and idletime < 100):
@@ -73,6 +80,20 @@ class RenderFrog(system.System):
             if (self.airtime >= 15):
                 self.image = IMAGES["FROG_JUMP6"]
             self.airtime += 1
+
+        if (self.frog.status == "walking"):
+            if (self.walktime >= 0 and self.walktime < 2):
+                self.image = IMAGES["FROG"]
+            if (self.walktime >= 2 and self.walktime < 6):
+                self.image = IMAGES["FROG_WALK1"]
+            if (self.walktime >= 6 and self.walktime < 10):
+                self.image = IMAGES["FROG_WALK2"]
+            if (self.walktime >= 10 and self.walktime < 12):
+                self.image = IMAGES["FROG_WALK3"]
+            if(self.walktime < 12):
+                self.walktime += 1
+            else:
+                self.walktime = 0
 
         if (self.frog.direction == "left"):
             pygame.Surface.blit(self.surface, pygame.transform.flip(self.image, True, False),
