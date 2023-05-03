@@ -69,7 +69,7 @@ class FrogInput(system.System):
             if self.frog.collider.colliderect(candidate):
                 return candidate
         return None
-    
+
     def side_colliding_any(self, candidates):
         for candidate in candidates:
             if self.frog.side_collider.colliderect(candidate):
@@ -83,7 +83,6 @@ class FrogInput(system.System):
         if candidate is not None:
             self.state = FrogStateGrounded(collider=candidate)
             self.frog.status = "idle"
-
 
         self.frog.collider.move_ip(0, -1)
 
@@ -207,9 +206,9 @@ class FrogInput(system.System):
         self.frog.side_collider.x = self.frog.collider.x - 3
         self.frog.side_collider.y = self.frog.collider.y + 5
 
-
         # Side Testing
         candidate = self.side_colliding_any(candidates)
 
         if candidate is not None:
-            print("Side colliding")
+            # print("Side colliding")
+            pass
