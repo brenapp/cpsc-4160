@@ -33,10 +33,10 @@ game_frog = frog.Frog(game_board, 50, 50)
 
 
 # Systems (run in this order)
-render_board.RenderTetrisBoard(game_board, surface)
-render_frog.RenderFrog(game_board, game_frog, surface)
 tetris_input.TetrisInput(game_board, status)
 frog_input.FrogInput(game_board, game_frog, status)
+render_board.RenderTetrisBoard(game_board, surface)
+render_frog.RenderFrog(game_board, game_frog, surface)
 render_powerup.RenderPowerUp(game_board, surface)
 game_flow.GameFlow(surface, status)
 

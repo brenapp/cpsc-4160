@@ -124,15 +124,14 @@ class FrogInput(system.System):
                 self.frog.vel[0].set(1)
                 self.frog.direction = "right"
 
-        else:
-            if isinstance(self.state, FrogStateGrounded):
-                self.frog.status = "idle"
-
         if keys[pygame.K_w] and not isinstance(self.state, FrogStateAirborne):
             self.frog.vel[1].set(-3)
             self.state = FrogStateAirborne()
             self.frog.status = "airborne"
-            
+
+        else:
+            if isinstance(self.state, FrogStateGrounded):
+                self.frog.status = "idle"
 
     def run(self, entities: list[entity.Entity], events: list[pygame.event.Event]):
 
@@ -151,16 +150,28 @@ class FrogInput(system.System):
                 # Jumping handled in player_input()
                 self.frog.collider.move_ip(0, 1)
 
-                if self.colliding_any(candidates) is None:
+                colliding = self.colliding_any(candidates)
+                if colliding is None:
                     self.state = FrogStateAirborne()
                     self.frog.status = "airborne"
+                else:
+
+                    # Get all rects colliding
+                    colliding = self.frog.collider.collidelistall(candidates)
+
+                    for i in colliding:
+
+                        # if the frog is completely within the collision candidate, game over
+                        overlap_horizontal = max(
+                            0, min(self.frog.collider.right, candidates[i].right) - max(self.frog.collider.left, candidates[i].left))
+
+                        within_vertical = (self.frog.collider.top >= candidates[i].top) and (
+                            self.frog.collider.bottom <= candidates[i].bottom)
+
+                        if within_vertical and overlap_horizontal > 10:
+                            self.game_status.winner = status.Winner.TETRIS
 
                 self.frog.collider.move_ip(0, -1)
-                if self.colliding_any(candidates) is not None:
-                    for collision in self.colliding_any(candidates):
-                        if collision not in self.side_colliding_any(candidates):
-                            self.game_status.winner = status.Winner.TETRIS
-                            print("Game Status: Tetris Wins")
 
             case FrogStateAirborne():
 
@@ -216,8 +227,8 @@ class FrogInput(system.System):
         self.frog.side_collider.y = self.frog.collider.y + 5
 
         # Side Testing
-        candidate = self.side_colliding_any(candidates)
+        i = self.side_colliding_any(candidates)
 
-        if candidate is not None:
+        if i is not None:
             # print("Side colliding")
             pass
