@@ -4,10 +4,12 @@ import entities.board as board
 import entities.tetromino as tetromino
 import entities.frog as frog
 import entities.powerup as powerup
+import entities.game_status as game_status
 import systems.system as system
 import systems.render_board as render_board
-import systems.input_tetris as input_tetris
-import systems.input_frog as input_frog
+import systems.tetris_input as tetris_input
+import systems.frog_input as frog_input
+import systems.game_flow as game_flow
 import systems.render_frog as render_frog
 import systems.render_powerup as render_powerup
 
@@ -24,19 +26,24 @@ pygame.display.set_caption("tetris platform")
 surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 
+# Global Entities
+status = game_status.GameStatus()
+status.winner = game_status.Winner.NONE
 game_board = board.Board()
-render_board.RenderTetrisBoard(game_board, surface)
-input_tetris.TetrisInput(game_board)
-
 game_frog = frog.Frog(game_board, 50, 50)
-render_frog.RenderFrog(game_board, game_frog, surface)
-input_frog.FrogInput(game_board, game_frog)
-
-
-render_powerup.RenderPowerUp(game_board, surface)
-
 game_powerup = powerup.PowerUp(0, 0)
 
+
+# Systems (run in this order)
+render_board.RenderTetrisBoard(game_board, surface)
+render_frog.RenderFrog(game_board, game_frog, surface)
+tetris_input.TetrisInput(game_board, status)
+frog_input.FrogInput(game_board, game_frog, status)
+render_powerup.RenderPowerUp(game_board, surface)
+game_flow.GameFlow(surface, status)
+
+
+winner = None
 while True:
     pygame.time.wait(10)
 
@@ -46,6 +53,8 @@ while True:
             sys.exit()
 
     clock.tick(60)
-    surface.fill(SCREEN_COLOR)
-    system.step_all(entity.ALL_ENTITIES)
-    pygame.display.flip()
+
+    if not status.game_over:
+        surface.fill(SCREEN_COLOR)
+        system.step_all(entity.ALL_ENTITIES)
+        pygame.display.flip()

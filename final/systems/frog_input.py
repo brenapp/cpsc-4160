@@ -4,10 +4,10 @@ from entities.board import Board, BOARD_WIDTH, BOARD_HEIGHT
 import systems.system as system
 import entities.frog as frog
 import entities.entity as entity
+import entities.game_status as status
 from systems.render_board import BOARD_HEIGHT_PX, BOARD_WIDTH_PX, BOARD_X, BOARD_Y, BOARD_TILE_RECTS, BOARD_LEFT_WALL_RECT, BOARD_RIGHT_WALL_RECT, BOARD_BOTTOM_RECT, CELL_HEIGHT
 import pygame
 import time
-import itertools
 from dataclasses import dataclass
 
 
@@ -35,10 +35,12 @@ class FrogInput(system.System):
     last_player_move = time.time()
 
     state: FrogState = FrogStateGrounded(collider=BOARD_BOTTOM_RECT)
+    game_status: status.GameStatus
 
-    def __init__(self, board: Board, frog: frog.Frog):
+    def __init__(self, board: Board, frog: frog.Frog, status: status.GameStatus):
         self.board = board
         self.frog = frog
+        self.game_status = status
         self.frog.direction = "right"
         self.frog.status = "idle"
 
@@ -150,8 +152,8 @@ class FrogInput(system.System):
                 if self.colliding_any(candidates) is not None:
                     for collision in self.colliding_any(candidates):
                         if collision not in self.side_colliding_any(candidates):
-                            print("Game Over!")
-                            sys.exit()
+                            self.game_status.winner = status.Winner.TETRIS
+                            print("Game Status: Tetris Wins")
 
             case FrogStateAirborne():
 
