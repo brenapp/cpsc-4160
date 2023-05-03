@@ -70,6 +70,12 @@ class FrogInput(system.System):
                 return candidate
         return None
 
+    def side_colliding_any(self, candidates):
+        for candidate in candidates:
+            if self.frog.side_collider.colliderect(candidate):
+                return candidate
+        return None
+
     def check_if_falling(self, candidates):
         self.frog.collider.move_ip(0, 1)
         candidate = self.colliding_any(candidates)
@@ -125,6 +131,7 @@ class FrogInput(system.System):
 
         # Check collisions
         candidates = self.get_collision_candidates()
+        side_candidates = self.get_collision_candidates()
 
         # Transitions
 
@@ -140,6 +147,11 @@ class FrogInput(system.System):
                     self.frog.status = "airborne"
 
                 self.frog.collider.move_ip(0, -1)
+                if self.colliding_any(candidates) is not None:
+                    for collision in self.colliding_any(candidates):
+                        if collision not in self.side_colliding_any(candidates):
+                            print("Game Over!")
+                            sys.exit()
 
             case FrogStateAirborne():
 
@@ -190,3 +202,13 @@ class FrogInput(system.System):
 
         if self.frog.collider.y > BOARD_Y + BOARD_HEIGHT_PX:
             self.frog.collider.y = BOARD_Y + BOARD_HEIGHT_PX
+
+        self.frog.side_collider.x = self.frog.collider.x - 3
+        self.frog.side_collider.y = self.frog.collider.y + 5
+
+        # Side Testing
+        candidate = self.side_colliding_any(candidates)
+
+        if candidate is not None:
+            # print("Side colliding")
+            pass

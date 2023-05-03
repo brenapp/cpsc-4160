@@ -19,6 +19,8 @@ IMAGES = {
     "FROG_JUMP6": pygame.image.load("assets/frog_jump6.png"),
 }
 
+DRAW_HITBOXES = False
+
 
 class RenderFrog(system.System):
 
@@ -39,7 +41,7 @@ class RenderFrog(system.System):
         # Draw the frog
         frameNum = pygame.time.get_ticks()
         idletime = frameNum % 600
-        if(self.frog.status != "airborne"):
+        if (self.frog.status != "airborne"):
             self.airtime = 0
         if (self.frog.status == "idle"):
             if (idletime >= 0 and idletime < 100):
@@ -72,10 +74,17 @@ class RenderFrog(system.System):
                 self.image = IMAGES["FROG_JUMP6"]
             self.airtime += 1
 
-
         if (self.frog.direction == "left"):
             pygame.Surface.blit(self.surface, pygame.transform.flip(self.image, True, False),
-                                (self.frog.collider.x, self.frog.collider.y))
+                                (self.frog.collider.x, self.frog.collider.y - 10))
         elif (self.frog.direction == "right"):
             pygame.Surface.blit(
                 self.surface, self.image, (self.frog.collider.x, self.frog.collider.y - 10))
+
+        # Draw hitboxes
+        red = (255, 0, 0)
+        green = (0, 255, 0)
+
+        if DRAW_HITBOXES:
+            pygame.draw.rect(self.surface, red, self.frog.collider)
+            pygame.draw.rect(self.surface, green, self.frog.side_collider)
