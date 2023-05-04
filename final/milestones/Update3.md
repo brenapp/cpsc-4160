@@ -1,5 +1,7 @@
 # Milestone #2 - Final Submission
 
+<img width="1012" alt="Screenshot 2023-05-03 at 9 59 24 PM" src="https://user-images.githubusercontent.com/8839926/236097952-c4c1dfaf-7975-4b80-bd59-dee5d3558261.png">
+
 ## Milestone Goals
 
 We did not accomplish all of the stretch goals we set out for this milestone, we added a number of
@@ -107,6 +109,9 @@ multiple tiles at once, causing it to spasm out.
 
 ## Updated Theming & General Polish
 
+<img width="1012" alt="Screenshot 2023-05-03 at 10 00 23 PM" src="https://user-images.githubusercontent.com/8839926/236097996-b948c2cd-fbe9-4b92-a1d6-e5a19b80908e.png">
+
+
 We also utilized the time in this milestone to add some additional graphics and polish to the game.
 One of the features introduced was a better concept of "game status", with a global entity which
 represents the current game status (recorded as the winner and if the game has ended). This allowed
@@ -156,6 +161,9 @@ class GameFlow(system.System):
 > [systems/game_flow.py](../systems/game_flow.py)
 
 ## Frog Scream Ability
+
+<img width="1012" alt="Screenshot 2023-05-03 at 9 59 24 PM" src="https://user-images.githubusercontent.com/8839926/236098007-1c771dff-e6ce-46e7-a8ca-f089a01c36e1.png">
+
 
 One of the final features we introduced was the concept of a "frog scream". This is a special
 ability the frog has to counteract the fact that it is relatively easy to trap the frog into
