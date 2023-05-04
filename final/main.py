@@ -40,7 +40,7 @@ frog_input.FrogInput(game_board, game_frog, status)
 render_board.RenderTetrisBoard(game_board, surface)
 render_frog.RenderFrog(game_board, game_frog, surface)
 render_powerup.RenderPowerUp(game_board, surface)
-handle_shockwave.HandleShockwave(surface)
+handle_shockwave.HandleShockwave(game_board, surface)
 
 game_flow.GameFlow(surface, status)
 

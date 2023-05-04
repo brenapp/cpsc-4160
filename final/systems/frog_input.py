@@ -129,7 +129,7 @@ class FrogInput(system.System):
             if isinstance(self.state, FrogStateGrounded):
                 self.frog.status = "idle"
 
-        if keys[pygame.K_e] and self.last_player_move + 0.5 < time.time():
+        if keys[pygame.K_e] and self.last_player_move + 4 < time.time():
             boom = shockwave.Shockwave(
                 self.frog.collider.x, self.frog.collider.y)
 
