@@ -9,7 +9,6 @@ import time
 
 
 class TetrisInput(system.System):
-
     board: Board
     game_status: status.GameStatus
     last_move = time.time()
@@ -22,11 +21,9 @@ class TetrisInput(system.System):
         super().__init__()
 
     def run(self, entities: list[entity.Entity], events: list[pygame.event.Event]):
-
         # React to Keydown
         for event in events:
             if event.type == pygame.KEYDOWN:
-
                 # move the active tetromino left
                 if event.key == pygame.K_LEFT:
                     self.board.move_active_tetromino(-1, 0)
@@ -50,7 +47,9 @@ class TetrisInput(system.System):
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_DOWN] and time.time() - self.last_player_move > 0.05:
-            if self.board.tetrominos[self.board.active_tetromino].can_move(0, 1, self.board.cells):
+            if self.board.tetrominos[self.board.active_tetromino].can_move(
+                0, 1, self.board.cells
+            ):
                 self.board.move_active_tetromino(0, 1)
                 self.last_player_move = time.time()
         elif keys[pygame.K_LEFT] and time.time() - self.last_player_move > 0.15:
@@ -70,11 +69,16 @@ class TetrisInput(system.System):
 
         # Spawn new tetromino if we can't move the current one down
         active = self.board.tetrominos[self.board.active_tetromino]
-        if not active.can_move(0, 1, self.board.cells) and time.time() - self.last_player_move > 0.15:
+        if (
+            not active.can_move(0, 1, self.board.cells)
+            and time.time() - self.last_player_move > 0.15
+        ):
             self.board.clear_lines()
 
             self.board.add_piece()
             self.hold = True
-            if not self.board.tetrominos[self.board.active_tetromino].can_move(0, 1, self.board.cells):
+            if not self.board.tetrominos[self.board.active_tetromino].can_move(
+                0, 1, self.board.cells
+            ):
                 self.game_status.winner = status.Winner.FROG
                 print("Game Status: Frog Wins")

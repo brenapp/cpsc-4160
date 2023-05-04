@@ -6,7 +6,17 @@ import entities.frog as frog
 import entities.entity as entity
 import entities.shockwave as shockwave
 import entities.game_status as status
-from systems.render_board import BOARD_HEIGHT_PX, BOARD_WIDTH_PX, BOARD_X, BOARD_Y, BOARD_TILE_RECTS, BOARD_LEFT_WALL_RECT, BOARD_RIGHT_WALL_RECT, BOARD_BOTTOM_RECT, CELL_HEIGHT
+from systems.render_board import (
+    BOARD_HEIGHT_PX,
+    BOARD_WIDTH_PX,
+    BOARD_X,
+    BOARD_Y,
+    BOARD_TILE_RECTS,
+    BOARD_LEFT_WALL_RECT,
+    BOARD_RIGHT_WALL_RECT,
+    BOARD_BOTTOM_RECT,
+    CELL_HEIGHT,
+)
 import pygame
 import time
 from dataclasses import dataclass
@@ -26,11 +36,10 @@ FrogState = FrogStateGrounded | FrogStateAirborne
 
 
 def sign(x):
-    return (1 if x > 0 else -1)
+    return 1 if x > 0 else -1
 
 
 class FrogInput(system.System):
-
     board: Board
     last_move = time.time()
     last_player_move = time.time()
@@ -48,16 +57,15 @@ class FrogInput(system.System):
         self.frog.vel[0].clamp(-10, 10)
         self.frog.vel[1].clamp(-10, 10)
 
-        self.frog.collider.x = (BOARD_X + BOARD_WIDTH_PX / 2)
-        self.frog.collider.y = (BOARD_HEIGHT_PX - 3 * CELL_HEIGHT)
+        self.frog.collider.x = BOARD_X + BOARD_WIDTH_PX / 2
+        self.frog.collider.y = BOARD_HEIGHT_PX - 3 * CELL_HEIGHT
 
         self.frog.step_kinematics()
 
         super().__init__()
 
     def get_collision_candidates(self):
-        candidates = [BOARD_LEFT_WALL_RECT,
-                      BOARD_RIGHT_WALL_RECT, BOARD_BOTTOM_RECT]
+        candidates = [BOARD_LEFT_WALL_RECT, BOARD_RIGHT_WALL_RECT, BOARD_BOTTOM_RECT]
         for y in range(0, BOARD_HEIGHT):
             for x in range(0, BOARD_WIDTH):
                 if self.board.cells[y][x] is None:
@@ -102,7 +110,6 @@ class FrogInput(system.System):
         return unaltered
 
     def player_input(self):
-
         keys = pygame.key.get_pressed()
 
         self.frog.vel[0].set(0)
@@ -129,9 +136,8 @@ class FrogInput(system.System):
             if isinstance(self.state, FrogStateGrounded):
                 self.frog.status = "idle"
 
-        if keys[pygame.K_e] and self.last_player_move + 4 < time.time():
-            boom = shockwave.Shockwave(
-                self.frog.collider.x, self.frog.collider.y)
+        if keys[pygame.K_e] and self.last_player_move + 0.5 < time.time():
+            boom = shockwave.Shockwave(self.frog.collider.x, self.frog.collider.y)
 
             if self.frog.direction == "left":
                 boom.vel[0].set(-3)
@@ -146,7 +152,6 @@ class FrogInput(system.System):
             self.frog.status = "airborne"
 
     def run(self, entities: list[entity.Entity], events: list[pygame.event.Event]):
-
         self.player_input()
 
         # Check collisions
@@ -154,10 +159,8 @@ class FrogInput(system.System):
 
         # Transitions
 
-        match(self.state):
-
+        match (self.state):
             case FrogStateGrounded(collider):
-
                 # Jumping handled in player_input()
                 self.frog.collider.move_ip(0, 1)
 
@@ -166,18 +169,20 @@ class FrogInput(system.System):
                     self.state = FrogStateAirborne()
                     self.frog.status = "airborne"
                 else:
-
                     # Get all rects colliding
                     colliding = self.frog.collider.collidelistall(candidates)
 
                     for i in colliding:
-
                         # if the frog is completely within the collision candidate, game over
                         overlap_horizontal = max(
-                            0, min(self.frog.collider.right, candidates[i].right) - max(self.frog.collider.left, candidates[i].left))
+                            0,
+                            min(self.frog.collider.right, candidates[i].right)
+                            - max(self.frog.collider.left, candidates[i].left),
+                        )
 
-                        within_vertical = (self.frog.collider.top >= candidates[i].top) and (
-                            self.frog.collider.bottom <= candidates[i].bottom)
+                        within_vertical = (
+                            self.frog.collider.top >= candidates[i].top
+                        ) and (self.frog.collider.bottom <= candidates[i].bottom)
 
                         if within_vertical and overlap_horizontal > 10:
                             self.game_status.winner = status.Winner.TETRIS
@@ -185,29 +190,26 @@ class FrogInput(system.System):
                 self.frog.collider.move_ip(0, -1)
 
             case FrogStateAirborne():
-
                 self.frog.collider.move_ip((0, self.frog.vel[1].value))
                 collision = self.colliding_any(candidates)
 
                 altered = False
 
                 while self.colliding_any(candidates) is not None:
-                    self.frog.collider.move_ip(
-                        0, -sign(self.frog.vel[1].value))
+                    self.frog.collider.move_ip(0, -sign(self.frog.vel[1].value))
                     altered = True
 
                 if altered:
                     self.state = FrogStateGrounded(collider=collision)
                     self.frog.status = "idle"
 
-        if (self.frog.vel[0].value != 0):
+        if self.frog.vel[0].value != 0:
             self.frog.collider.move_ip((self.frog.vel[0].value, 0))
 
             altered = False
 
             while self.colliding_any(candidates) is not None:
-                self.frog.collider.move_ip(
-                    -sign(self.frog.vel[0].value), 0)
+                self.frog.collider.move_ip(-sign(self.frog.vel[0].value), 0)
                 altered = True
 
             if altered:
@@ -215,7 +217,7 @@ class FrogInput(system.System):
 
         # Gravity
         if isinstance(self.state, FrogStateAirborne):
-            self.frog.vel[1].set(min(1, self.frog.vel[1].value + 0.1))
+            self.frog.vel[1].set(min(3, self.frog.vel[1].value + 0.1))
         else:
             self.frog.vel[1].set(0)
 

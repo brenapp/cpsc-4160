@@ -22,7 +22,7 @@ SCREEN_HEIGHT = 600
 SCREEN_COLOR = (30, 30, 30)
 
 pygame.init()
-pygame.display.set_caption("tetris platform")
+pygame.display.set_caption("Tetris Hopper")
 surface = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 clock = pygame.time.Clock()
 
